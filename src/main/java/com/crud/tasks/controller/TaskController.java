@@ -1,5 +1,6 @@
 package com.crud.tasks.controller;
 
+import com.crud.tasks.domain.Task;
 import com.crud.tasks.domain.TaskDto;
 import com.crud.tasks.mapper.TaskMapper;
 import com.crud.tasks.service.DbService;
@@ -28,13 +29,14 @@ public class TaskController {
         return taskMapper.mapToTaskDto(service.getTask(taskId).orElseThrow(TaskNotFoundException::new));
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "deleteTask")
-    public void deleteTask(Long taskId) {
+    @RequestMapping(method = RequestMethod.DELETE, value = "deleteTask", params = {"id"})
+    public void deleteTask(@RequestParam(value = "id") Long taskId) {
+        service.deleteTask(taskId);
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "updateTask")
-    public TaskDto updateTask(TaskDto taskDto) {
-        return new TaskDto(1L, "Edited test title", "Test content");
+    public TaskDto updateTask(@RequestBody TaskDto taskDto) {
+        return taskMapper.mapToTaskDto(service.saveTask(taskMapper.mapToTask(taskDto)));
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "createTask", consumes = APPLICATION_JSON_VALUE)
