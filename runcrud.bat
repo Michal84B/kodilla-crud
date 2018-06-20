@@ -22,9 +22,9 @@ goto fail
 
 :runtomcat
 call %CATALINA_HOME%\bin\startup.bat
-goto end
-
-got end
+if "%ERRORLEVEL%" == "0" goto end
+echo tomcat not working
+goto fail
 
 :fail
 echo.
