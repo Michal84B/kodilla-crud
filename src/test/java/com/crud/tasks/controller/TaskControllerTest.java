@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -49,10 +50,28 @@ public class TaskControllerTest {
         mockMvc.perform(get("/v1/task/getTasks")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect((jsonPath("$", hasSize(1))))
+                .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(1)))
                 .andExpect(jsonPath("$[0].title", is("Test Dto Task")))
                 .andExpect(jsonPath("$[0].content", is("Test DTO description")));
+    }
+    @Test
+    public void shouldGetTask() throws Exception{
+        //Given
+        Task task = new Task(1L, "Test task", "Test description");
+        TaskDto taskDto = new TaskDto(1L, "Test Dto Task", "Test DTO description");
+        when(taskMapper.mapToTaskDto(task)).thenReturn(taskDto);
+        when(dbService.getTask(task.getId())).thenReturn(Optional.ofNullable(task));
+        //When & Then
+        mockMvc.perform(get("/v1/task/getTask?id=1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.title", is("Test Dto Task")))
+                .andExpect(jsonPath("$.content", is("Test DTO description")));
+
+
+
     }
 
 }
